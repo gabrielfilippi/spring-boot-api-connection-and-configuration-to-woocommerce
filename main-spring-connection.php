@@ -5,21 +5,42 @@
  * Description: This plugin connects woocommerce with Floricultura Filippi's custom system using Spring Boot.
  * Author: Gabriel Filippi
  * Author URI: #
- * Version: 0.1.0
+ * Version: 0.1.2
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
  */
 
 if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
+require_once ('spring-boot-api-controll.php');
+require_once ('spring-boot-api-order.php');
+class MainSpringConnection{
 
-define("LOG_API_SPRING", true);
-define("BASE_API_URL_SPRING", "http://localhost:8080/api/");
-define("API_VERSION_SPRING", "v1/");
-define("ENDPOINT_API_AUTHENTICATION_SPRING", "auth/signin/");
-define("ENDPOINT_API_GENERATEQRCODE_SPRING", "orderUpdates/generateQrCode/");
-define("ENDPOINT_API_SAVEORDERCOPY_SPRING", "orderUpdates/saveOrderCopy/");
-define("AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING", "ADko3ie12em9daslda9MF93mrl3c034krfsa0dasdk");
+    public function __construct() {
+        // This hook will run when the plugin is activated and call the activate function
+        register_activation_hook(__FILE__, '__spring_boot_API_controll_db');
+    }
 
-require ('spring-boot-api-controll.php');
-require ('spring-boot-api-order.php');
+    /**
+     * Create a table in the database so we can save when the last cron access was and look for products that 
+     * have been updated since the last cron access.
+     * 
+     * @since 04/10/2022
+     */
+    public function __spring_boot_API_controll_db(){
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+    
+        $table_name = $wpdb->prefix . 'controll_orders_last_cron_runned';
+        $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
+            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            last_time_runned_gmt datetime DEFAULT NOW() NOT NULL,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
+    
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        dbDelta( $sql );
+    }
+
+}
+new MainSpringConnection();

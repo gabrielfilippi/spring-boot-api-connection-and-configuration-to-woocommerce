@@ -1,7 +1,8 @@
 <?php
 //Load WordPress.
 require('../../../wp-load.php');
-
+require_once('spring-boot-api-controll.php');
+require_once('spring-boot-api-order.php');
 /**
  * This Class is responsible for checking if there were updates in the requests via cron server.
  * We check if since the last time cron ran we haven't had any updates in the requests, if so send the request json to the Spring Boot API
@@ -20,12 +21,11 @@ class SpringBootAPICronControllOrders {
     }
 
     public function __run_cron(){
-        if(isset($_GET['auth_cron']) && $_GET['auth_cron'] == AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING){
+        $wooAPIControll = new SpringBootAPIControll();
+        if(isset($_GET['auth_cron']) && $_GET['auth_cron'] == $wooAPIControll->__get_AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING()){
+            $wooAPIOrder = new SpringBootAPIOrder();
             global $wpdb;
-            
-            $wooAPIControll  = new SpringBootAPIControll();
-            $wooAPIOrder  = new SpringBootAPIOrder();
-        
+
             $sql = $wpdb->prepare( "SELECT * FROM wp_controll_orders_last_cron_runned ORDER BY id DESC LIMIT 1");
             $resultsArr = $wpdb->get_results( $sql );
         
@@ -51,16 +51,18 @@ class SpringBootAPICronControllOrders {
                      * SEND ORDER DATA JSON TO SPRING BOOT
                      * 
                     */
-                    $wooAPIOrder->__generate_order_data($order_id);
+                   $wooAPIOrder->__generate_order_data($order_id);
         
                     $params = [
                         'typeCurl' => "GET",
-                        'URL' => BASE_API_URL_SPRING.API_VERSION_SPRING.ENDPOINT_API_SAVEORDERCOPY_SPRING,
+                        'URL' => $wooAPIControll->__get_BASE_API_URL_SPRING()
+                                    .$wooAPIControll->__get_API_VERSION_SPRING()
+                                    .$wooAPIControll->__get_ENDPOINT_API_SAVEORDERCOPY_SPRING(),
                         'postData' => json_encode($wooAPIOrder->__get_order_full_data()),
                         'header' => array('Content-Type: application/json', 'Authorization: Bearer ' . $wooAPIControll->__get_authentication_jwt())
                     ];
         
-                    if(LOG_API_SPRING){
+                    if($wooAPIControll->__get_LOG_API_SPRING()){
                         error_log(
                             print_r($wooAPIOrder->__get_order_full_data(), true)
                         );

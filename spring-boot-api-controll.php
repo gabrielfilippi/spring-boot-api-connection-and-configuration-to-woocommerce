@@ -1,6 +1,5 @@
 <?php
 if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
-
 /**
  * This class controls the api request like authentication and sending data via Curl
  * 
@@ -8,34 +7,19 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  * @since 04/10/2022
  */
 class SpringBootAPIControll {
+    private const LOG_API_SPRING = true;
+    private const BASE_API_URL_SPRING = "http://localhost:8080/api/";
+    private const API_VERSION_SPRING = "v1/";
+    private const ENDPOINT_API_AUTHENTICATION_SPRING = "auth/signin/";
+    private const ENDPOINT_API_GENERATEQRCODE_SPRING = "orderUpdates/generateQrCode/";
+    private const ENDPOINT_API_SAVEORDERCOPY_SPRING = "orderUpdates/saveOrderCopy/";
+    private const AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING = "ADko3ie12em9daslda9MF93mrl3c034krfsa0dasdk";
+
     private $_authentication_jwt;
     private $_result_api;
     private $_status_api;
-    
+
     public function __construct() {
-        // This hook will run when the plugin is activated and call the activate function
-        register_activation_hook(__FILE__, '__spring_boot_API_controll_db');
-    }
-    
-    /**
-     * Create a table in the database so we can save when the last cron access was and look for products that 
-     * have been updated since the last cron access.
-     * 
-     * @since 04/10/2022
-     */
-    public function __spring_boot_API_controll_db(){
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-    
-        $table_name = $wpdb->prefix . 'controll_orders_last_cron_runned';
-        $sql = "CREATE TABLE IF NOT EXISTS `$table_name` (
-            id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            last_time_runned_gmt datetime DEFAULT NOW() NOT NULL,
-            PRIMARY KEY (id)
-        ) $charset_collate;";
-    
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $sql );
     }
 
     /**
@@ -50,7 +34,9 @@ class SpringBootAPIControll {
         ];
         $params = [
             'typeCurl' => "POST",
-            'URL' => BASE_API_URL_SPRING.API_VERSION_SPRING.ENDPOINT_API_AUTHENTICATION_SPRING,
+            'URL' => $this->__get_BASE_API_URL_SPRING()
+                        .$this->__get_API_VERSION_SPRING()
+                        .$this->__get_ENDPOINT_API_AUTHENTICATION_SPRING(),
             'postData' => json_encode($postData),
             'header' => array('Content-Type: application/json')
         ];
@@ -101,7 +87,7 @@ class SpringBootAPIControll {
             error_log(print_r("Error: failed to make curl API with status $status, response $result, curl_error " . curl_error($ch) . ", curl_errno " . curl_errno($ch), true));
         }
     
-        if(LOG_API_SPRING){
+        if($this->__get_LOG_API_SPRING()){
             error_log(
                 print_r("#API LOG: status $status, response $result, curl_error " . curl_error($ch) . ", curl_errno " . curl_errno($ch), true)
             );
@@ -159,6 +145,55 @@ class SpringBootAPIControll {
      */
     public function __set_result_api($_result_api){
         $this->_result_api = $_result_api;
+    }
+
+    /**
+     * getter LOG_API_SPRING
+     */
+    public function __get_LOG_API_SPRING(){
+        return self::LOG_API_SPRING;
+    }
+
+    /**
+     * getter BASE_API_URL_SPRING
+     */
+    public function __get_BASE_API_URL_SPRING(){
+        return self::BASE_API_URL_SPRING;
+    }
+
+    /**
+     * getter API_VERSION_SPRING
+     */
+    public function __get_API_VERSION_SPRING(){
+        return self::API_VERSION_SPRING;
+    }
+
+    /**
+     * getter API_AUTHENTICATION_SPRING
+     */
+    public function __get_ENDPOINT_API_AUTHENTICATION_SPRING(){
+        return self::ENDPOINT_API_AUTHENTICATION_SPRING;
+    }
+
+    /**
+     * getter ENDPOINT_API_GENERATEQRCODE_SPRING
+     */
+    public function __get_ENDPOINT_API_GENERATEQRCODE_SPRING(){
+        return self::ENDPOINT_API_GENERATEQRCODE_SPRING;
+    }
+
+    /**
+     * getter ENDPOINT_API_SAVEORDERCOPY_SPRING
+     */
+    public function __get_ENDPOINT_API_SAVEORDERCOPY_SPRING(){
+        return self::ENDPOINT_API_SAVEORDERCOPY_SPRING;
+    }
+
+    /**
+     * getter AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING
+     */
+    public function __get_AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING(){
+        return self::AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING;
     }
 
 }

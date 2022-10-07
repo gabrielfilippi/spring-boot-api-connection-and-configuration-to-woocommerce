@@ -1,4 +1,5 @@
 <?php
+if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
 /**
  * This class is responsible for having the functions to handle order data
  * 
@@ -6,9 +7,9 @@
  */
 class SpringBootAPIOrder {
     private $_order_full_data;
-    
+
     public function __construct() {
-        add_action('woocommerce_order_status_changed', [$this, 'generateQrCode'], 10, 4);
+        add_action('woocommerce_order_status_changed', [$this, 'generateQrCodeAndShippingStatus'], 10, 4);
     }
 
     /**
@@ -47,18 +48,21 @@ class SpringBootAPIOrder {
     }
 
     /**
-     * When the order is approved/paid, we generate a unique qrCode for it.
+     * When the order is approved/paid, we generate a unique qrCode for it AND set Shipping Status.
      * The QRCode will be used to confirm the order.
      * 
      * @since 01/10/2022
      */
-    function generateQrCode($order_id, $old_status, $new_status){
-        $wooAPIControll  = new SpringBootAPIControll();
+    function generateQrCodeAndShippingStatus($order_id, $old_status, $new_status){
+        $wooAPIControll = new SpringBootAPIControll();
         $wooAPIControll->__api_authentication();
         if($new_status == "processing" && ($wooAPIControll->__get_status_api() == 200 || $wooAPIControll->__get_status_api() == 201)){
+            update_post_meta($order_id, 'order_shipping_status', 'PEDIDO_PAGO');
             $params = [
                 'typeCurl' => "GET",
-                'URL' => BASE_API_URL_SPRING.API_VERSION_SPRING.ENDPOINT_API_GENERATEQRCODE_SPRING,
+                'URL' => $wooAPIControll->__get_BASE_API_URL_SPRING()
+                            .$wooAPIControll->__get_API_VERSION_SPRING()
+                            .$wooAPIControll->__get_ENDPOINT_API_GENERATEQRCODE_SPRING(),
                 'postData' => json_encode([
                     "orderId" => $order_id,
                     "originOrder" => "ecommerce"
