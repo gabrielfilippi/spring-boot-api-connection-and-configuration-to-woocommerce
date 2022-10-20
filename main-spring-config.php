@@ -5,15 +5,15 @@
  * Description: This plugin connects woocommerce with Floricultura Filippi's custom system using Spring Boot.
  * Author: Gabriel Filippi
  * Author URI: #
- * Version: 0.1.2
+ * Version: 0.2.0
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  *
  */
 
 if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
-require_once ('spring-boot-api-controll.php');
-require_once ('spring-boot-api-order.php');
+require_once ('spring-boot-controll.php');
+require_once ('spring-boot-order.php');
 class MainSpringConnection{
 
     public function __construct() {

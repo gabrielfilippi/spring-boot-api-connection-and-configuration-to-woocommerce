@@ -6,7 +6,7 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  * @author Gabriel Filippi
  * @since 04/10/2022
  */
-class SpringBootAPIControll {
+class SpringBootControll {
     private const LOG_API_SPRING = true;
     private const BASE_API_URL_SPRING = "http://localhost:8080/api/";
     private const API_VERSION_SPRING = "v1/";
@@ -198,4 +198,4 @@ class SpringBootAPIControll {
 
 }
 
-new SpringBootAPIControll();
+new SpringBootControll();

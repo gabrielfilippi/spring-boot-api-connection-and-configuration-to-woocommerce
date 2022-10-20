@@ -5,7 +5,7 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  * 
  * @since 04/10/2022
  */
-class SpringBootAPIOrder {
+class SpringBootOrder {
     private $_order_full_data;
 
     public function __construct() {
@@ -54,7 +54,7 @@ class SpringBootAPIOrder {
      * @since 01/10/2022
      */
     function generateQrCodeAndShippingStatus($order_id, $old_status, $new_status){
-        $wooAPIControll = new SpringBootAPIControll();
+        $wooAPIControll = new SpringBootControll();
         $wooAPIControll->__api_authentication();
         if($new_status == "processing" && ($wooAPIControll->__get_status_api() == 200 || $wooAPIControll->__get_status_api() == 201)){
             update_post_meta($order_id, 'order_shipping_status', 'PEDIDO_PAGO');
@@ -98,4 +98,4 @@ class SpringBootAPIOrder {
 
 }
 
-new SpringBootAPIOrder();
+new SpringBootOrder();

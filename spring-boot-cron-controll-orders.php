@@ -1,8 +1,8 @@
 <?php
 //Load WordPress.
 require('../../../wp-load.php');
-require_once('spring-boot-api-controll.php');
-require_once('spring-boot-api-order.php');
+require_once('spring-boot-controll.php');
+require_once('spring-boot-order.php');
 /**
  * This Class is responsible for checking if there were updates in the requests via cron server.
  * We check if since the last time cron ran we haven't had any updates in the requests, if so send the request json to the Spring Boot API
@@ -10,7 +10,7 @@ require_once('spring-boot-api-order.php');
  * @author Gabriel Filippi
  * @since 04/10/2022
  */
-class SpringBootAPICronControllOrders {
+class SpringBootCronControllOrders {
     private $_no_errors;
     private $_time_gmt;
 
@@ -21,9 +21,9 @@ class SpringBootAPICronControllOrders {
     }
 
     public function __run_cron(){
-        $wooAPIControll = new SpringBootAPIControll();
+        $wooAPIControll = new SpringBootControll();
         if(isset($_GET['auth_cron']) && $_GET['auth_cron'] == $wooAPIControll->__get_AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING()){
-            $wooAPIOrder = new SpringBootAPIOrder();
+            $wooAPIOrder = new SpringBootOrder();
             global $wpdb;
 
             $sql = $wpdb->prepare( "SELECT * FROM wp_controll_orders_last_cron_runned ORDER BY id DESC LIMIT 1");
@@ -112,4 +112,4 @@ class SpringBootAPICronControllOrders {
 
 }
 
-new SpringBootAPICronControllOrders();
+new SpringBootCronControllOrders();
