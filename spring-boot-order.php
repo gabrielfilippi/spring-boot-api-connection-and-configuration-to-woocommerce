@@ -27,10 +27,12 @@ class SpringBootOrder {
         // Get and Loop Over Order Items
         $order_items = array();
         foreach ( $order->get_items() as $item_id => $item ) {
+            $product = $item->get_product();
             $order_items[] = (object) array(
                 'product_id' => $item->get_product_id(),
                 'variation_id' => $item->get_variation_id(),
                 'product_name' => $item->get_name(),
+                'unitary_price' => $product->get_price(),
                 'quantity' => $item->get_quantity(),
                 'subtotal' => $item->get_subtotal(),
                 'total' => $item->get_total(),
