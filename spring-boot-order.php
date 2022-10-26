@@ -26,12 +26,15 @@ class SpringBootOrder {
         
         // Get and Loop Over Order Items
         $order_items = array();
+        $order_total = 0;
         foreach ( $order->get_items() as $item_id => $item ) {
             $product = $item->get_product();
+            $order_total += $item->get_total();
             $order_items[] = (object) array(
                 'product_id' => $item->get_product_id(),
                 'variation_id' => $item->get_variation_id(),
                 'product_name' => $item->get_name(),
+                'product_sku' => $product->get_sku(),
                 'unitary_price' => $product->get_price(),
                 'quantity' => $item->get_quantity(),
                 'subtotal' => $item->get_subtotal(),
@@ -43,8 +46,25 @@ class SpringBootOrder {
                 'somemeta' => $item->get_meta( '_whatever', true ),
                 'item_type' => $item->get_type() // e.g. "line_item"
             );
+
         }
         $response['orderItems'] = $order_items;
+        $response['orderData']['order_sub_total'] = $order_total;
+
+        $order_shipping_items = array();
+        foreach( $order->get_items( 'shipping' ) as $item_id => $item ){
+            $order_shipping_items[] = (object) array(
+                'order_item_name'             => $item->get_name(),
+                'order_item_type'             => $item->get_type(),
+                'shipping_method_title'       => $item->get_method_title(),
+                'shipping_method_id'          => $item->get_method_id(), // The method ID
+                'shipping_method_instance_id' => $item->get_instance_id(), // The instance ID
+                'shipping_method_total'       => $item->get_total(),
+                'shipping_method_total_tax'   => $item->get_total_tax(),
+                'shipping_method_taxes'       => $item->get_taxes()
+            );
+        }
+        $response['orderData']['shipping_lines'] = $order_shipping_items;
 
         $this->__set_order_full_data($response);
     }

@@ -29,14 +29,17 @@ class SpringBootCronControllOrders {
             $sql = $wpdb->prepare( "SELECT * FROM wp_controll_orders_last_cron_runned ORDER BY id DESC LIMIT 1");
             $resultsArr = $wpdb->get_results( $sql );
         
-            $last_time_cron_is_runned = "2022-09-03 01:08:34";
+            $last_time_cron_is_runned = "2021-12-03 01:08:34";
             if(count($resultsArr) > 0 ){
                 $last_time_cron_is_runned = $resultsArr[0]->{'last_time_runned_gmt'};
             }
         
             $result_orders = $wpdb->get_results ("
-                SELECT * FROM wp_posts
-                    WHERE post_type = 'shop_order' AND post_modified_gmt between '$last_time_cron_is_runned' AND '$this->_time_gmt'
+                SELECT * FROM wp_posts 
+                WHERE 
+                post_type = 'shop_order' 
+                AND post_status IN('wc-processing', 'wc-completed', 'wc-cancelled', 'wc-refunded') 
+                AND post_modified_gmt between '$last_time_cron_is_runned' AND '$this->_time_gmt'
             ");
             
             foreach ( $result_orders as $order_post ){
