@@ -8,18 +8,24 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  */
 class SpringBootControll {
     private const LOG_API_SPRING = true;
-    private const BASE_API_URL_SPRING = "http://localhost:8080/api/";
     private const API_VERSION_SPRING = "v1/";
     private const ENDPOINT_API_AUTHENTICATION_SPRING = "auth/signin/";
     private const ENDPOINT_API_GENERATEQRCODE_SPRING = "orderUpdates/generateQrCode/";
     private const ENDPOINT_API_SAVEORDERCOPY_SPRING = "orderUpdates/saveOrderCopy/";
-    private const AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING = "ADko3ie12em9daslda9MF93mrl3c034krfsa0dasdk";
-
+    
+    private $_base_api;
     private $_authentication_jwt;
     private $_result_api;
     private $_status_api;
 
     public function __construct() {
+        if(get_bloginfo('wpurl') == "https://floriculturafilippi.com.br"){
+            $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
+        }else if(get_bloginfo('wpurl') == "https://wpflori.floriculturafilippi.com.br"){
+            $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
+        }else{
+            $this->_base_api = "http://localhost:8080/api/";
+        }
     }
 
     /**
@@ -29,8 +35,8 @@ class SpringBootControll {
      */
     public function __api_authentication(){
         $postData = [
-            'userName' => 'gabriel',
-            'password' => '123123'
+            'userName' => "wooAuthConnection",
+            'password' => "RKShzJiprSHdI6NJhJIf9GpNk/K7iLpiKIjt5sn5qrw="
         ];
         $params = [
             'typeCurl' => "POST",
@@ -158,7 +164,7 @@ class SpringBootControll {
      * getter BASE_API_URL_SPRING
      */
     public function __get_BASE_API_URL_SPRING(){
-        return self::BASE_API_URL_SPRING;
+        return  $this->_base_api;
     }
 
     /**
@@ -187,13 +193,6 @@ class SpringBootControll {
      */
     public function __get_ENDPOINT_API_SAVEORDERCOPY_SPRING(){
         return self::ENDPOINT_API_SAVEORDERCOPY_SPRING;
-    }
-
-    /**
-     * getter AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING
-     */
-    public function __get_AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING(){
-        return self::AUTH_CRON_TO_UPDATE_ORDER_IN_SPRING;
     }
 
 }

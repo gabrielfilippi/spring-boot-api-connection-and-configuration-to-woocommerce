@@ -6,67 +6,8 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  * @since 04/10/2022
  */
 class SpringBootOrder {
-    private $_order_full_data;
-
     public function __construct() {
         add_action('woocommerce_order_status_changed', [$this, 'generateQrCodeAndShippingStatus'], 10, 4);
-    }
-
-    /**
-     * It generates the order data and also all the products contained in it.
-     * 
-     * @since 04/10/2022
-     */
-    public function __generate_order_data($order_id){
-        // Get an instance of the WC_Order object
-        $order = wc_get_order( $order_id );
-    
-        // Get the meta data in an unprotected array
-        $response['orderData'] = $order->get_data();
-        
-        // Get and Loop Over Order Items
-        $order_items = array();
-        $order_total = 0;
-        foreach ( $order->get_items() as $item_id => $item ) {
-            $product = $item->get_product();
-            $order_total += $item->get_total();
-            $order_items[] = (object) array(
-                'product_id' => $item->get_product_id(),
-                'variation_id' => $item->get_variation_id(),
-                'product_name' => $item->get_name(),
-                'product_sku' => $product->get_sku(),
-                'unitary_price' => $product->get_price(),
-                'quantity' => $item->get_quantity(),
-                'subtotal' => $item->get_subtotal(),
-                'total' => $item->get_total(),
-                'tax' => $item->get_subtotal_tax(),
-                'tax_class' => $item->get_tax_class(),
-                'tax_status' => $item->get_tax_status(),
-                'allmeta' => $item->get_meta_data(),
-                'somemeta' => $item->get_meta( '_whatever', true ),
-                'item_type' => $item->get_type() // e.g. "line_item"
-            );
-
-        }
-        $response['orderItems'] = $order_items;
-        $response['orderData']['order_sub_total'] = $order_total;
-
-        $order_shipping_items = array();
-        foreach( $order->get_items( 'shipping' ) as $item_id => $item ){
-            $order_shipping_items[] = (object) array(
-                'order_item_name'             => $item->get_name(),
-                'order_item_type'             => $item->get_type(),
-                'shipping_method_title'       => $item->get_method_title(),
-                'shipping_method_id'          => $item->get_method_id(), // The method ID
-                'shipping_method_instance_id' => $item->get_instance_id(), // The instance ID
-                'shipping_method_total'       => $item->get_total(),
-                'shipping_method_total_tax'   => $item->get_total_tax(),
-                'shipping_method_taxes'       => $item->get_taxes()
-            );
-        }
-        $response['orderData']['shipping_lines'] = $order_shipping_items;
-
-        $this->__set_order_full_data($response);
     }
 
     /**
@@ -79,7 +20,7 @@ class SpringBootOrder {
         $wooAPIControll = new SpringBootControll();
         $wooAPIControll->__api_authentication();
         if($new_status == "processing" && ($wooAPIControll->__get_status_api() == 200 || $wooAPIControll->__get_status_api() == 201)){
-            update_post_meta($order_id, 'order_shipping_status', 'PEDIDO_PAGO');
+            update_post_meta($order_id, 'order_shipping_status', 'PEDIDO_APROVADO');
             $params = [
                 'typeCurl' => "GET",
                 'URL' => $wooAPIControll->__get_BASE_API_URL_SPRING()
@@ -100,22 +41,6 @@ class SpringBootOrder {
                 error_log(print_r($resultQR, true));
             }
         }
-    }
-
-    /** 
-     * getter _order_full_data
-     * 
-     */
-    public function __get_order_full_data(){
-        return $this->_order_full_data;
-    }
-
-    /**
-     * setter _order_full_data
-     * 
-     */
-    public function __set_order_full_data($_order_full_data){
-        $this->_order_full_data = $_order_full_data;
     }
 
 }
