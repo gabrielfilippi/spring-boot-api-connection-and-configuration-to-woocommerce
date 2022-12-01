@@ -22,7 +22,7 @@ class SpringBootControll {
         if(get_bloginfo('wpurl') == "https://floriculturafilippi.com.br"){
             $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
         }else if(get_bloginfo('wpurl') == "https://wpflori.floriculturafilippi.com.br"){
-            $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
+            $this->_base_api = "https://homologacao.pedidos.floriculturafilippi.com.br/api/";
         }else{
             $this->_base_api = "http://localhost:8080/api/";
         }
