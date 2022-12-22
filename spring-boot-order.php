@@ -8,18 +8,8 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
 class SpringBootOrder {
     public function __construct() {
         add_action('woocommerce_order_status_changed', [$this, 'generateQrCodeAndShippingStatus'], 10, 4);
-        add_action('woocommerce_checkout_update_order_meta', [$this, 'add_order_shipping_status'], 10, 2);
     }
 
-    /**
-     * When order is created, the shipping_status is waiting payment
-     */
-    function add_order_shipping_status($order_id, $posted){
-        $order = new WC_Order($order_id);
-        $order->update_meta_data( 'order_shipping_status', 'AGUARDANDO_PAGAMENTO' );
-        $order->save();
-    }
-   
     /**
      * When the order is approved/paid, we generate a unique qrCode for it AND set Shipping Status.
      * The QRCode will be used to confirm the order.
@@ -50,6 +40,12 @@ class SpringBootOrder {
             }else{
                 error_log(print_r($resultQR, true));
             }
+        }
+
+        //verify if post meta exists, if not, create new meta key
+        $order_priority = get_post_meta($order_id, 'order_priority');
+        if($order_priority == null){
+            update_post_meta($order_id, 'order_priority', 'NORMAL');
         }
     }
 

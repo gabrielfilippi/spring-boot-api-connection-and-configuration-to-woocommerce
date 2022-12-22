@@ -7,7 +7,7 @@ if (! defined ('ABSPATH')) exit; // Saia se acessado diretamente
  * @since 04/10/2022
  */
 class SpringBootControll {
-    private const LOG_API_SPRING = true;
+    private const LOG_API_SPRING = false;
     private const API_VERSION_SPRING = "v1/";
     private const ENDPOINT_API_AUTHENTICATION_SPRING = "auth/signin/";
     private const ENDPOINT_API_GENERATEQRCODE_SPRING = "orderUpdates/generateQrCode/";
@@ -22,7 +22,7 @@ class SpringBootControll {
         if(get_bloginfo('wpurl') == "https://floriculturafilippi.com.br"){
             $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
         }else if(get_bloginfo('wpurl') == "https://wpflori.floriculturafilippi.com.br"){
-            $this->_base_api = "https://homologacao.pedidos.floriculturafilippi.com.br/api/";
+            $this->_base_api = "https://pedidos.floriculturafilippi.com.br/api/";
         }else{
             $this->_base_api = "http://localhost:8080/api/";
         }
